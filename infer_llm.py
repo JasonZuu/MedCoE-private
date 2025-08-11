@@ -19,7 +19,7 @@ from vocab.tpe_tokenizer_fast import TPETokenizerFast
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default="data/hf_models/Qwen--Qwen2.5-1.5B-Instruct", help="LLM model path.")
-    parser.add_argument("--data_dir", type=str, default="data/EHR_QA", help="Data directory.")
+    parser.add_argument("--data_dir", type=str, default="data/EHR_QA_v2", help="Data directory.")
     parser.add_argument("--log_dir", type=str, help="Output file path.")
     parser.add_argument("--tpe_model_dir", type=str, default="data/tpe_models", help="TPE model directory.")
     parser.add_argument("--sft_model_dir", type=str, default="data/sft_models", help="SFT model directory.")

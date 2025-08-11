@@ -3,12 +3,12 @@ export HF_DATASETS_CACHE=./hf_cache
 
 MODEL_PATHS=(
   # "data/hf_models/meta-llama--Llama-3.2-1B-Instruct"
-  "data/hf_models/Qwen--Qwen2.5-1.5B-Instruct"
+  # "data/hf_models/Qwen--Qwen2.5-1.5B-Instruct"
   "data/hf_models/Qwen--Qwen2.5-7B-Instruct"
   "data/hf_models/meta-llama--Llama-3.1-8B-Instruct"
 )
 
-DATASET="MIMICIV"
+DATASET="EHRSHOT"
 if [[ "$DATASET" == "MIMICIV" ]]; then
   TASKS=("icu_phenotyping" "icu_mortality")
 elif [[ "$DATASET" == "EHRSHOT" ]]; then
@@ -18,7 +18,7 @@ fi
 GPU_UTIL=0.9
 NUM_RESPONSES=1
 DATA_FORMAT="nl"
-PE_METHODS=("eb" "coe" "cot")
+PE_METHODS=("raw" "eb" "coe" "cot")
 LOG_DIR="./log/CoE_val"
 MAX_INPUT_LEN="4k"
 

@@ -33,7 +33,7 @@ def get_args():
                         choices=["nl", "json", "yaml", "xml"],
                         help="Data format.")
     parser.add_argument("--pe_method", type=str, default="cot",
-                        choices=["raw", 'cot', "coe"], help="Algorithm to use for inference.")
+                        choices=["raw", "eb", 'cot', "coe"], help="Algorithm to use for inference.")
     parser.add_argument("--seed", type=int, default=1, help="Random seed.")
     parser.add_argument("--max_input_len", type=str, default="8k",
                         choices=["500", "1k", "2k", "4k", "6k", "8k", "12k", "16k", "24k"],
