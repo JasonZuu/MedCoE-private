@@ -13,8 +13,12 @@ def load_hf_dataset(data_files: dict,
     instruction = "Now make your prediction."
     if pe_method == "raw":
         pass
+    elif pe_method == "eb": # evidence based
+        instruction += " Generate the answer with evidence and explanation."
     elif pe_method == "cot":
-        instruction += " Let think step by step."
+        instruction += " Think step by step."
+    elif pe_method == "coe":
+        instruction += " Think step-by-step and generate the answer with evidence and explanation."
     else:
         raise ValueError(f"Invalid pe_method: {pe_method}")
     

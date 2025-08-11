@@ -32,10 +32,8 @@ def get_args():
                         help="Task name.")
     parser.add_argument("--data_format", type=str, default="nl",
                         choices=["nl", "json", "yaml", "xml"], help="Data format.")
-    parser.add_argument("--tokenizer_type", type=str, default="bpe",
-                        choices=["tpe", "bpe", "tpe-sft"], help="Tokenizer type to use for inference.")
-    parser.add_argument("--pe_method", type=str, default="raw", 
-                        choices=["raw", 'cot', "coe"], help="Algorithm to use for inference.")
+    parser.add_argument("--pe_method", type=str, default="eb", 
+                        choices=["raw", "eb", 'cot', "coe"], help="Algorithm to use for inference.")
     parser.add_argument("--data_split", type=str, default="held_out", 
                         choices=["train", "tuning", "held_out"], help="Set name.")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for inference.")
@@ -69,8 +67,7 @@ if __name__ == "__main__":
                               max_input_len=args.max_input_len, 
                               llm_name=log_llm_name,
                               data_format=args.data_format,
-                              n_response=args.num_responses if args.num_responses > 1 else None,
-                              postfix=args.tokenizer_type)
+                              n_response=args.num_responses)
     output_fpath = log_dir / f"{log_fname}.parquet"
     print("will save to ", output_fpath)
     if output_fpath.exists():
@@ -113,61 +110,14 @@ if __name__ == "__main__":
     algo_config.device = args.device
 
     # init the model and sampling params
-    if args.tokenizer_type == "bpe":
-        print("Model Path:", args.model_path)
-        llm = LLM(model=args.model_path, 
-                  dtype="bfloat16", 
-                  max_model_len=algo_config.max_model_len,
-                  enforce_eager=True, 
-                  gpu_memory_utilization=args.gpu_util, 
-                  tensor_parallel_size=len(args.gpu_ids),
-                  trust_remote_code=True)
-    elif args.tokenizer_type == "tpe":
-        tpe_model_path = get_sft_model_dir(args.tpe_model_dir,
-                                      model_name=log_llm_name,
-                                      task=args.task, 
-                                      max_n=args.max_n, 
-                                      max_m=args.max_m)
-        print("Model Path:", tpe_model_path)
-        llm = LLM(model=str(tpe_model_path), 
-                  dtype="bfloat16",
-                  max_model_len=algo_config.max_model_len,
-                  enforce_eager=True, 
-                  gpu_memory_utilization=args.gpu_util,
-                  tensor_parallel_size=len(args.gpu_ids),
-                  trust_remote_code=True)
-        tokenizer = TPETokenizerFast.from_pretrained(tpe_model_path)
-        llm.set_tokenizer(tokenizer)
-    elif args.tokenizer_type == "tpe-sft":
-        sft_model_path = get_sft_model_dir(args.sft_model_dir,
-                                      model_name=log_llm_name,
-                                      task=args.task, 
-                                      max_n=args.max_n, 
-                                      max_m=args.max_m)
-        print("Model Path:", sft_model_path)
-        llm = LLM(model=str(sft_model_path), 
-                  dtype="bfloat16", 
-                  max_model_len=algo_config.max_model_len,
-                  enforce_eager=True, 
-                  gpu_memory_utilization=args.gpu_util,
-                  tensor_parallel_size=len(args.gpu_ids),
-                  trust_remote_code=True)
-        tokenizer = TPETokenizerFast.from_pretrained(sft_model_path)
-        llm.set_tokenizer(tokenizer)
-    elif args.tokenizer_type == "tpe-sft-lora":
-        sft_model_path = get_sft_model_dir(args.sft_lora_model_dir,
-                                      model_name=log_llm_name,
-                                      task=args.task, 
-                                      max_n=args.max_n, 
-                                      max_m=args.max_m)
-        llm = LLM(model=str(sft_model_path), dtype="bfloat16", max_model_len=algo_config.max_model_len,
-                    enforce_eager=True, gpu_memory_utilization=args.gpu_util,
-                    tensor_parallel_size=len(args.gpu_ids),
-                    trust_remote_code=True)
-        tokenizer = TPETokenizerFast.from_pretrained(sft_model_path)
-        llm.set_tokenizer(tokenizer)
-    else:
-        raise NotImplementedError("Dynamic vocab is not implemented yet.")
+    print("Model Path:", args.model_path)
+    llm = LLM(model=args.model_path, 
+                dtype="bfloat16", 
+                max_model_len=algo_config.max_model_len,
+                enforce_eager=True, 
+                gpu_memory_utilization=args.gpu_util, 
+                tensor_parallel_size=len(args.gpu_ids),
+                trust_remote_code=True)
     
     sampling_params = SamplingParams(
         n=args.num_responses,    

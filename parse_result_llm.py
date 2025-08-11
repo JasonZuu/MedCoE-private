@@ -33,7 +33,7 @@ def get_args():
                         choices=["nl", "json", "yaml", "xml"],
                         help="Data format.")
     parser.add_argument("--pe_method", type=str, default="cot",
-                        choices=["raw", 'cot'], help="Algorithm to use for inference.")
+                        choices=["raw", 'cot', "coe"], help="Algorithm to use for inference.")
     parser.add_argument("--seed", type=int, default=1, help="Random seed.")
     parser.add_argument("--max_input_len", type=str, default="8k",
                         choices=["500", "1k", "2k", "4k", "6k", "8k", "12k", "16k", "24k"],
@@ -43,9 +43,6 @@ def get_args():
     parser.add_argument("--avg_method", type=str, default="macro",
                         choices=["binary", "macro", "micro"],
                         help="Method to use for averaging.")
-    parser.add_argument('--log_fname_postfix', type=str, default="bpe",
-                        choices=["bpe", "lingua2", "tpe-sft"],
-                        help="Postfix for log file name.")
     parser.add_argument('--n_response', type=int, default=1,
                         help="Number of responses to consider for evaluation.")
     return parser.parse_args()
@@ -60,23 +57,22 @@ if __name__ == "__main__":
 
     # deal with the log file name.
     log_fname = get_log_fname(task=args.task,
-                            data_format=args.data_format,
-                            max_input_len=args.max_input_len,
-                            llm_name=args.llm_id,
-                            pe_method=args.pe_method,
-                            n_response=args.n_response if args.n_response > 1 else None,
-                            postfix=args.log_fname_postfix)
+                             data_format=args.data_format,
+                             max_input_len=args.max_input_len,
+                             llm_name=args.llm_id,
+                             pe_method=args.pe_method,
+                             n_response=args.n_response,)
     
     # check if the results already exist
-    output_fpath = log_dir / f"{log_fname}.json"
+    output_fpath = log_dir /f"{log_fname}.json"
     print("will save to ", output_fpath)
     if output_fpath.exists():
         print(f"Results already exist at: {output_fpath}")
         exit()
 
     # Check if the LLM output file exists. If not, there is no data to evaluate.
-    response_file = Path(args.response_dir)/f"{log_fname}.parquet"
-    running_info_file = Path(args.response_dir)/f"running_info_{log_fname}.json"
+    response_file = Path(args.response_dir)/ args.dataset /f"{log_fname}.parquet"
+    running_info_file = Path(args.response_dir)/ args.dataset /f"running_info_{log_fname}.json"
     if not response_file.exists():
         print(f"Results do not exist at: {response_file}")
         exit()
