@@ -33,7 +33,7 @@ def get_args():
     parser.add_argument("--data_format", type=str, default="nl",
                         choices=["nl", "json", "yaml", "xml"], help="Data format.")
     parser.add_argument("--pe_method", type=str, default="eb", 
-                        choices=["raw", "eb", 'cot', "coe"], help="Algorithm to use for inference.")
+                        choices=["raw", "eb", 'cot', "coe", "medcoe"], help="Algorithm to use for inference.")
     parser.add_argument("--data_split", type=str, default="held_out", 
                         choices=["train", "tuning", "held_out"], help="Set name.")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for inference.")

@@ -19,6 +19,19 @@ def load_hf_dataset(data_files: dict,
         instruction += " Think step by step."
     elif pe_method == "coe":
         instruction += " Think step-by-step and generate the answer with evidence and explanation."
+    elif pe_method == "medcoe":
+        prompt = \
+"""Output sections (keep each within 2 lines):
+1. Problem Representation - one sentence, disease-agnostic (demographics, key risk factors, tempo, defining measurement patterns).
+2. Top Scripts (3-5) - for each: expected features vs contradictors from the provided data.
+3. Evidence Weighting - for the top 2 scripts, state whether key findings raise (↑), are neutral (→), or lower (↓) the likelihood; name those findings.
+4. Structured Reflection - one threat to the top dx and one alternative you'd consider; say what would change your mind.
+5. Prediction - output JSON only: {"answer": "Your Answer”}.
+Rules: 
+- Use only the EHR text provided here; do not add outside facts.
+- Be concise; prefer explicit measurements, trends, thresholds, and time windows.
+- The final line of your response must be the JSON object and nothing else."""
+        instruction += prompt
     else:
         raise ValueError(f"Invalid pe_method: {pe_method}")
     
