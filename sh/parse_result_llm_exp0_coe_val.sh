@@ -22,6 +22,7 @@ PE_METHODS=("raw" "eb" "coe" "cot")
 RESPONSE_DIR="./log/CoE_val"
 LOG_DIR="./log/CoE_val/metric"
 DATA_FORMAT="nl" 
+TASK_SPECIFIC_PE=false  # Set to true to enable task-specific prompt engineering
 
 for MODEL_PATH in "${MODEL_PATHS[@]}"; do
   for TASK in "${TASKS[@]}"; do
@@ -35,7 +36,8 @@ for MODEL_PATH in "${MODEL_PATHS[@]}"; do
               --max_input_len $MAX_INPUT_LEN \
               --response_dir $RESPONSE_DIR \
               --dataset $DATASET \
-              --log_dir $LOG_DIR 
+              --log_dir $LOG_DIR \
+              $([ "$TASK_SPECIFIC_PE" = true ] && echo "--task_specific_pe")
     done
   done
 done

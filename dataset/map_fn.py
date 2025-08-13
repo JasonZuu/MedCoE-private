@@ -458,17 +458,3 @@ def map_race_to_index(race:str):
     else: # unknown case
         return 5
     
-
-if __name__ == "__main__":
-    # load the inference dataset
-    # data_files = {'held_out': 'data/EHR_QA/MIMICIV/icu_mortality/nl/held_out.parquet'}
-    # dataset = load_dataset("parquet", data_files=data_files, columns=['label', "data", "question"])
-
-    # llm_tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
-    # dataset = dataset.map(sample_mapping_fn, 
-    #                       fn_kwargs={"instruction": "Now please predict whether the patient will die in the ICU or not. Answer A for die and B for survive.",
-    #                                 "llm_tokenizer": llm_tokenizer, "max_input_length": 32*1024-8*1024})
-    
-    # print(dataset["held_out"]["message"][0])
-    # print(dataset["held_out"]["label"][0])
-    pass

@@ -45,6 +45,8 @@ def get_args():
                         help="Method to use for averaging.")
     parser.add_argument('--n_response', type=int, default=1,
                         help="Number of responses to consider for evaluation.")
+    parser.add_argument('--task_specific_pe', action='store_true',
+                        help="Whether task-specific prompt engineering was used.")
     return parser.parse_args()
 
 
@@ -61,7 +63,8 @@ if __name__ == "__main__":
                              max_input_len=args.max_input_len,
                              llm_name=args.llm_id,
                              pe_method=args.pe_method,
-                             n_response=args.n_response,)
+                             n_response=args.n_response,
+                             task_specific_pe=args.task_specific_pe)
     
     # check if the results already exist
     output_fpath = log_dir /f"{log_fname}.json"

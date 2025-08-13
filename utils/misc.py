@@ -51,6 +51,7 @@ def class_to_onehot(labels:torch.Tensor, num_classes:int):
 
 def get_log_fname(task, data_format, max_input_len, llm_name, pe_method,
                   n_response=None,
+                  task_specific_pe=False,
                   postfix=None):
     """
     Generate a log filename based on task, data format, and time resolution.
@@ -61,6 +62,9 @@ def get_log_fname(task, data_format, max_input_len, llm_name, pe_method,
         max_input_len (str): The input token context length.
         llm_name (str): The name of the LLM model.
         pe_method (str): The method used for positional encoding.
+        n_response (int, optional): Number of responses.
+        task_specific_pe (bool, optional): Whether task-specific prompt engineering is used.
+        postfix (str, optional): Additional postfix for the filename.
 
     Returns:
         str: The generated log filename.
@@ -68,6 +72,8 @@ def get_log_fname(task, data_format, max_input_len, llm_name, pe_method,
     log_fname = f"{task}_{data_format}_{max_input_len}_{llm_name}_{pe_method}"
     if n_response is not None:
         log_fname += f"_nres-{n_response}"
+    if task_specific_pe:
+        log_fname += "_task-pe"
     if postfix is not None:
         log_fname += f"_{postfix}"
     return log_fname

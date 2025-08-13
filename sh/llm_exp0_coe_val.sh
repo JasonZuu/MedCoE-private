@@ -5,7 +5,7 @@ MODEL_PATHS=(
   # "data/hf_models/meta-llama--Llama-3.2-1B-Instruct"
   # "data/hf_models/Qwen--Qwen2.5-1.5B-Instruct"
   "data/hf_models/Qwen--Qwen2.5-7B-Instruct"
-  "data/hf_models/meta-llama--Llama-3.1-8B-Instruct"
+  # "data/hf_models/meta-llama--Llama-3.1-8B-Instruct"
 )
 
 DATASET="EHRSHOT"
@@ -18,9 +18,10 @@ fi
 GPU_UTIL=0.9
 NUM_RESPONSES=1
 DATA_FORMAT="nl"
-PE_METHODS=("raw" "eb" "coe" "cot")
+PE_METHODS=("raw" "coe" "cot")
 LOG_DIR="./log/CoE_val"
 MAX_INPUT_LEN="4k"
+TASK_SPECIFIC_PE=true  # Set to true to enable task-specific prompt engineering
 
 for MODEL_PATH in "${MODEL_PATHS[@]}"; do
   for TASK in "${TASKS[@]}"; do
@@ -36,7 +37,8 @@ for MODEL_PATH in "${MODEL_PATHS[@]}"; do
                 --num_responses $NUM_RESPONSES \
                 --model_path $MODEL_PATH \
                 --max_input_len $MAX_INPUT_LEN \
-                --log_dir $LOG_DIR 
+                --log_dir $LOG_DIR \
+                $([ "$TASK_SPECIFIC_PE" = true ] && echo "--task_specific_pe")
     done
   done
 done

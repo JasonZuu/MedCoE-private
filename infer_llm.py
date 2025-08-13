@@ -33,7 +33,7 @@ def get_args():
     parser.add_argument("--data_format", type=str, default="nl",
                         choices=["nl", "json", "yaml", "xml"], help="Data format.")
     parser.add_argument("--pe_method", type=str, default="eb", 
-                        choices=["raw", "eb", 'cot', "coe", "medcoe"], help="Algorithm to use for inference.")
+                        choices=["raw", "eb", 'cot', "coe"], help="Algorithm to use for inference.")
     parser.add_argument("--data_split", type=str, default="held_out", 
                         choices=["train", "tuning", "held_out"], help="Set name.")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for inference.")
@@ -41,9 +41,10 @@ def get_args():
     parser.add_argument("--num_responses", type=int, default=1, help="number of responses to generate dataset.")
     parser.add_argument("--gpu_ids",  type=lambda s: [int(item) for item in s.split(',')], default=[0], help="Comma-separated list of GPU IDs to use for inference.")
     parser.add_argument("--num_workers", type=int, default=None, help="Number of workers to use for data loading.")
-    parser.add_argument("--gpu_util", type=float, default=0.9, help="Number of workers to use for data loading.")
+    parser.add_argument("--gpu_util", type=float, default=0.35, help="Number of workers to use for data loading.")
     parser.add_argument("--max_input_len", type=str, default="8k", choices=["500", "1k", "2k", "4k", "6k", "8k", "12k"],
                         help="Max input length.")
+    parser.add_argument("--task_specific_pe", action="store_true", help="Whether to use task-specific prompt engineering.")
     return parser.parse_args()
 
 
@@ -67,7 +68,8 @@ if __name__ == "__main__":
                               max_input_len=args.max_input_len, 
                               llm_name=log_llm_name,
                               data_format=args.data_format,
-                              n_response=args.num_responses)
+                              n_response=args.num_responses,
+                              task_specific_pe=args.task_specific_pe)
     output_fpath = log_dir / f"{log_fname}.parquet"
     print("will save to ", output_fpath)
     if output_fpath.exists():
@@ -139,9 +141,11 @@ if __name__ == "__main__":
             raise ValueError(f"Dataset file does not exist at: {data_fpath}")
 
     dataset = load_hf_dataset(data_files, tokenizer, 
-                                data_split=args.data_split,
-                                input_max_length=algo_config.max_input_len,
-                                pe_method=args.pe_method, num_workers=args.num_workers)
+                              data_split=args.data_split,
+                              input_max_length=algo_config.max_input_len,
+                              pe_method=args.pe_method, 
+                              num_workers=args.num_workers,
+                              task=args.task if args.task_specific_pe else None)
 
     # run the inference
     print("Running inference...")
